@@ -179,7 +179,7 @@ main = do
 
   db <- MVar.newMVar (DB start permutation)
 
-  let port = 3000
+  let port = 82
   putStrLn (F.format "+ Listening on port {}" (F.Only port))
   run port (application db)
 
