@@ -30,7 +30,6 @@ executable husky
                      , containers
                      , bytestring
                      , json
-                     , http-conduit
                      , utf8-string
                      , text
                      , directory

@@ -20,7 +20,6 @@ import           Data.Text.Lazy.Encoding (decodeUtf8, encodeUtf8)
 import           Data.Text.Lazy.IO
 import           Data.Text.Lazy.Read
 import           Data.Word8
-import qualified Network.HTTP.Conduit as H
 import           Network.HTTP.Types (status200)
 import           Network.Wai
 import           Network.Wai.Handler.Warp (run)
@@ -104,14 +103,10 @@ postPayload token notice = do
     True -> do
       putStrLn (T.concat ["+ Pretending (-n) to post ", (decodeUtf8 . encode) notice])
     False -> do
-      response <- conduit_get request
-      putStrLn (decodeUtf8 (H.responseBody response))
+      r <- post (T.unpack url) (encode notice)
+      putStrLn (decodeUtf8 $ r ^. responseBody)
     where
       url = T.append "https://trello.slack.com/services/hooks/incoming-webhook?token=" token
-      baseRequest = H.parseUrl (T.unpack url)
-      request = fmap (H.urlEncodedBody [("payload", bytes)]) baseRequest
-      conduit_get r = r >>= (H.withManager . H.httpLbs)
-      bytes = (B.concat . L.toChunks . encode) notice
 
 newtype User = User Text deriving (Eq, Ord)
 data Person = Person User Channel
