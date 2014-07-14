@@ -20,7 +20,7 @@ This will launch an HTTP server that listens to port 82.
 
 Create a Custom Command (like `/randomtaco`) and point it at the HTTP server.
 
-![tacobot in action!](screenshot.png)
+![tacobot in action!](screenshot.jpg)
 
 ### Contributors
 
