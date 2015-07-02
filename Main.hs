@@ -10,11 +10,11 @@ import           Data.Attoparsec.ByteString
 import qualified Data.Attoparsec.ByteString as P
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as L
-import           Data.Text.Lazy (Text)
-import qualified Data.Text.Lazy as T
-import           Data.Text.Lazy.Encoding (decodeUtf8)
-import           Data.Text.Lazy.IO (readFile, writeFile)
-import           Data.Text.Lazy.Read (decimal)
+import           Data.Text (Text)
+import qualified Data.Text as T
+import           Data.Text.Encoding (decodeUtf8)
+import           Data.Text.IO (readFile, writeFile)
+import           Data.Text.Read (decimal)
 import           Data.Word8
 import           Network.Linklater
 import           Network.Wai.Handler.Warp (run)
@@ -43,7 +43,7 @@ shuffle xs = do
 data DB = DB Int (Permutation Int)
 
 (#<) :: B.ByteString -> Text
-(#<) = decodeUtf8 . L.fromChunks . return
+(#<) = decodeUtf8
 
 present :: (Show a) => a -> Text
 present = T.pack . show
@@ -93,7 +93,7 @@ husky' config channel user lottery = do
 
 husky :: MVar DB -> Config -> Maybe Command -> IO Text
 husky db config command = case command of
-  Just (Command (Just "husky") user channel Nothing) -> do
+  Just (Command "husky" user channel Nothing) -> do
     putStrLn (show command)
     lottery <- lotteryIO
     husky' config channel user lottery
@@ -103,7 +103,7 @@ husky db config command = case command of
           lottery_ <- readArray x (start `mod` 100000)
           writeFile "start" (present $ start + 1)
           return (DB (start + 1) x, lottery_)
-  Just (Command (Just "husky") user channel (Just text)) -> case decimal text of
+  Just (Command "husky" user channel (Just text)) -> case decimal text of
     Right (lottery, _) ->
       if lottery < 100000 then husky' config channel user lottery else tooHighIO
     Left _ ->
@@ -130,6 +130,6 @@ main = do
   run port (slashSimple $ husky db config)
   where
     configIO =
-      (Config "trello.slack.com" . T.filter (/= '\n')) <$> readFile "token"
+      (Config . T.filter (/= '\n')) <$> readFile "token"
     port = 3335
     seed = 1000
