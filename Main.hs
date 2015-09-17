@@ -91,9 +91,9 @@ husky' config channel user lottery = do
     [FormatAt user, FormatLink url ("Husky #" <> present lottery)]
   return ""
 
-husky :: MVar DB -> Config -> Maybe Command -> IO Text
+husky :: MVar DB -> Config -> Command -> IO Text
 husky db config command = case command of
-  Just (Command "husky" user channel Nothing) -> do
+  (Command "husky" user channel Nothing) -> do
     putStrLn (show command)
     lottery <- lotteryIO
     husky' config channel user lottery
@@ -103,13 +103,11 @@ husky db config command = case command of
           lottery_ <- readArray x (start `mod` 100000)
           writeFile "start" (present $ start + 1)
           return (DB (start + 1) x, lottery_)
-  Just (Command "husky" user channel (Just text)) -> case decimal text of
+  (Command "husky" user channel (Just text)) -> case decimal text of
     Right (lottery, _) ->
       if lottery < 100000 then husky' config channel user lottery else tooHighIO
     Left _ ->
       defaultIO
-  _ ->
-    defaultIO
   where
     defaultIO =
       return "Type `/husky` to receive your very own, completely unique Siberian Husky."

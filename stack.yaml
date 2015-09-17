@@ -1,0 +1,8 @@
+flags: {}
+packages:
+- '.'
+- location:
+    git: git@github.com:hlian/linklater
+    commit: e26a
+extra-deps: []
+resolver: lts-3.5
