@@ -1,3 +1,5 @@
+[As featured on Wired.](http://www.wired.com/2015/08/slack-overrun-bots-friendly-wonderful-bots/all/1)
+
 ### Features
 
 * You type `/randomtaco`.
